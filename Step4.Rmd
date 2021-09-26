@@ -1,0 +1,573 @@
+---
+title: "Food and Weather on Mars"
+author: "Carly Mahoney"
+date: "11/17/2020"
+output: html_document
+---
+```{r,echo=FALSE,include=FALSE}
+library(rpart)
+library(rpart.plot)
+library(Metrics)
+library(knitr)
+source("DataWrangling2.R")
+```
+## Project Overview
+
+I have found space travel interesting for a long time and the fact that we are projecting to have humans on Mars in the 2030’s, recently sparked my interest in how life will be supported on Mars. This project looks at some of the logistics of growing food for future colonies on Mars. I was able to answer questions including how much food will we need, how long will it take to grow, how much space we will need to grow it, what varieties will result in the most efficient food production, and how much energy are we going to need to control conditions inside greenhouses, as well as look at some Martian weather data.
+
+My findings did not include a magic crop that would be perfect for growing on Mars, but I was able to determine a list of 18 vegetables that would likely be more efficient than the rest. I was able to answer the logistic questions using custom functions and even though I didn't have as much data as I would have liked, I developed a neural network model to predicted wind speed on Mars. Also, when I employed data exploration techniques on the weather data, I discovered some things I found interesting.   
+
+## Data Sources
+
+The data for this project came from multiple sources. The Mars weather data and the regolith pH came from two NASA missions, Mars Insight and Phoenix Lander. The Mars Insight is an instrument which sits on the surface of the planet near the equator and collects weather as well as other data and the Phoenix Lander is a stationary instrument with a built in chemistry lab that is able to study the Martian regolith.
+[Webpage](https://mars.nasa.gov/insight/weather/)
+
+The data which I saved in a variable called harvests contains average yields and plant spacing for common garden vegetables. It was originally collected by Rutgers New Jersey Agricultural Experiment Station by observing reported historical market garden yields, recent small-scale operation yields, and yields from community gardens.
+[Webpage](https://morningchores.com/vegetable-garden-size/)
+
+Calories is data on the number of calories in vegetables. I was not able to find who collected the data or how it was collected but it came from [Calories](https://www.calories.info/food/vegetables).
+
+GrowTimes is the length of time it takes for common vegetables to grow and pH is the pH range plants prefer. Both data sets came from a website that is basically a gardening encyclopedia. I could not find who collected the data, but I am guessing the data was collected by observation. 
+URL: [Garden Helper](http://www.thegardenhelper.com)
+
+mCal and fCal are ideal calorie consumption estimates based on average human measurements compiled by The Office of Disease Prevention and Health Promotion. [Webpage](https://health.gov/our-work/food-nutrition/2015-2020-dietary-guidelines/guidelines/appendix-2/#footnote-2)
+
+### Relevant Data Frame Information {.tabset} 
+#### Harvest 
+Harvest is a data frame compiled of Calories, Grow Times, pH, and Harvests. It has 92 total rows and 42 rows with all the variables I needed for my procedures. The variables I used included:
+
+-Avg. Yield per 100 feet (lb): numeric, means exactly what it is called
+
+-Plants Spacing (in): numeric, how far plants should be spaced apart
+
+-Min Time Needed to Grow (days): numeric, minimum time needed for a plant to be ready for harvest when grown from a seed
+
+-Calories per lb.New: numeric, the number of calories in one pound of a vegetable
+
+-pH Min and pH Max: numeric, the pH range to which plants are best suited for
+
+-Vegetable.Category: categorical, the part of the plant which is consumed
+
+Determined a way to judge the efficiency of a plants.
+
+Note: Harvest.Tree is Harvest with all the variables not used for analysis taken out.
+
+####mCal and fCal
+
+mCal and fCal are data frames with numeric values that give you an estimate for the number of calories different activity levels of people of different age ranges should eat per day. Each have 30 rows and m=male and f=female.
+
+Used this data with Harvest to give an idea of energy, space, and time needed.
+
+####MarsWeather.df
+Besides the dates, all values in this data frame are numeric. It provides min, max, and average values for temperature (Fahrenheit), wind (mph), and pressure (in Pa) for dates on Earth and their corresponding sol on Mars. It contains 66 rows of data without NA's.
+
+
+## Data Wrangling {.tabset}
+
+### Harvest
+Since Harvest is a combination of multiple data sets, it took a lot of data wrangling to get it into a usable form. For the Calories data frame the table's xpath was used to directly bring it into R from the webpage. Row 1 and columns 4 and 6 were removed. The columns were renamed and the first column (vegetable names) became the row names. Some string extracts had to be performed to remove unwanted labels. These can be seen in Appendix I - Calories.
+
+pH was copied and pasted into an Excel file, converted to a .csv file and uploaded to R. The data was in the its original table as a range so when it was copied to Excel, a duplicate column was created. Once in R the wanted values were extracted using strings and column 1 became the row names. See Appendix I - pH for code.
+
+Harvests was a table brought into using xpath in the same way Calories was. Once again the first column became the row names and strings were used to extract just numeric values for certain columns. See Appendix I - Harvests for code.
+
+GrowTimes was copied and pasted into Excel like pH, but there ended up being some blank rows when the file was uploaded to R. In the code in Appendix I - GrowTimes, the blank rows were removed, the first column became the row names, numeric values were extracted, and a couple columns were renamed.
+
+The code for combining these data frames into one is in Appendix I - Merging. Before being merged many rows had to be renamed in order to match rows in the other data frames. Code for the renames can be found in Appendix I - Harvests and Grow Times. Most of the row renames for pH and GrowTimes were done directly in their csv files. Each time two data frames were merged, the first column had to be set to be the row names.
+
+The final data frame, Harvest, took some extra work. (see Appendix I - Harvest). After merging the data frames, only 23 of the rows did not have any NA's for the variables used in this project. To add more data, I converted the data frame to a csv file and looked up data to fill in more rows. Once completed the file was reread into a data frame and the values were converted to numeric. 
+
+### mCal and fCal
+For these two data sets, the data was in table form on the [webpage](https://health.gov/our-work/food-nutrition/2015-2020-dietary-guidelines/guidelines/appendix-2/#footnote-2). They were both copied and pasted into their own .xlsx files, converted into .csv format, and uploaded and read by R. The commas had to be taken out of the numerical values and the rows were renamed to be the first column of data. See Appendix II for code.
+
+### MarsWeather.df
+On the webpage this data is found, the data can be seen in a table with six rows each containing data from a certain date. The table is typically updated daily. This table was copied and pasted into an Excel sheet whenever the table contained dates that were not already in the sheet. Past data tables were acquired in the same way from [archive.org](https://web.archive.org/web/*/https://mars.nasa.gov/insight/weather/). The sheet was converted to a .csv file and uploaded to R.
+
+Once in R, the Fahrenheit symbol was removed from the temperature columns and the variable that were supposed to be numeric were converted. The rows were named with the Sol column.  
+
+## Techniques {.tabset}
+
+### Harvest and Cal's
+
+On Mars, resources for growing food will likely be limited and growing conditions will be different from those on Earth. To preserve resources, we will want food sources that have high yields, take up minimal space, grow quickly, have high calorie densities, and will grow well in the Martian soil. 
+
+On the Harvest data set, I used a custom function and a for loop to be able to make observations on the efficiency of plants (see Appendix IV for code). The function counts the number of inequalities that are true for each plant in Harvest.Tree and then a for loop adds the number to a column in Harvest.Tree named Efficiency. The inequalities for 'Min Time Needed to Grow', 'Calories per lb.New', and 'Avg. Yield per 100 ft' were determined based on their quartile values in the summary of Harvest.Tree. For example, if a plant contains 320 calories/lb that puts it in the top 25% for calories and it would be given one efficiency point for that variable. Since the pH of Martian soil is about 8.3, ideally, we want plants that can handle a pH of 8. If a plant can, it gets one efficiency point. 
+
+The Harvest set mixed with the mCal and fCal allowed me to create two functions. One gives the time, number of greenhouses (100ft by 10ft), and energy needed to produce enough food to feed a certain number and age group of people for one year growing chosen plants and the other gives the space and energy needed to grow the same amount of food in one year. It is important to note that these functions give very rough estimates. They don't take into account the energy it will take to pressurize, light, and water the greenhouses or the advancements in space optimization, growing methods, and greenhouse materials that will likely be developed before humans are sent.
+
+Before these functions could be produce, I had to create an energy function. The function takes 4 arguments in order to give an estimate for the amount of energy a half cylinder shaped greenhouse will need in a day and gives the results in kilowatts. 
+
+This specific way of calculating energy needed came from: [Greenhouse Heating](https://www.dpi.nsw.gov.au/agriculture/horticulture/greenhouse/structures-and-technology/heating#:~:text=Wind%20increases%20the%20removal%20of%20heat%20from%20the,it%20is%20a%20good%20idea%20to%20include%20it). 
+
+It considers wind shear, air leakage, and difference in temperature between the inside and outside of a greenhouse (see code for functions in Appendix V as well as notes on how to use them).
+
+### Mars Weather
+
+I used a feedforward neural network on the Mars weather data to predict wind speed. The explanatory variables I used were max temperature, average temperature, min temperature, average pressure, and wind direction. The wind direction had to be converted into a matrix into order to be used since it was originally in the data frame as a factor. The data was split into two sets, a training set consisting of 75% of the data and a test set consisting of the other 25%. The sets were normalized after the split in order to prevent data leakage. See Appendix VI - Sets for code.
+
+When making the model I fiddled around with parameters trying to minimize the RMSE. My final model uses the logistic activation function for each node, but I did try everything using softplus as well. The logistic and softplus functions are both bounded activation functions which fit well with my bounded data. Without an activation function the we would only be able to apply linear transformations limiting the neural networks potential. I ended up using six hidden layers with five nodes each in the final model. Each time the model is run it is different. The RMSE's vary quite a bit. They range from about 1.5 to 4. See Appendix VI - Models for code.
+
+## Results {.tabset}
+
+### Food
+
+Orginally when I was working with the Harvest data set, I wanted to use a decision tree to be able to classify what the edible part to a plant would be. I quickly discovered however, I did not have enough data for each plant part to properly train the tree (see Appendix VII for tree attempt). The tree did suggest a relationship between 'Calories per lb.New' and Vegetable.Category. Upon further observation (boxplots below), I discovered if you want to produce plants with high calorie counts, grow edible seeds, roots, and bulbs.
+```{r,echo=FALSE}
+boxplot(log(Harvest$`Calories per lb.New`[Harvest$Vegetable.Category=="seed"]),log(Harvest$`Calories per lb.New`[Harvest$Vegetable.Category=="root"]),log(Harvest$`Calories per lb.New`[Harvest$Vegetable.Category=="bulb"]),log(Harvest$`Calories per lb.New`[Harvest$Vegetable.Category=="stem"]),log(Harvest$`Calories per lb.New`[Harvest$Vegetable.Category=="fruit"]),log(Harvest$`Calories per lb.New`[Harvest$Vegetable.Category=="leaves"]),names=c("Seed","Root","Bulb","Stem","Fruit","Leaves"),ylab="log(Calories in One Pound of Vegetable)",main="Calories in Different Types of Vegetables",xlab="Edible Part of Plant")
+```
+
+When I analyzed the Efficiency column I created for Harvest.Tree, I was slightly disappointed to find the max efficiency score was 2 out of a possible 4. Maybe one the of plants I didn't have all the data for is a 3, but I worked with what I had and produced a list (shown below) of vegetables that would be best to grow on Mars based on my version of efficiency.
+```{r,echo=FALSE}
+max(Harvest.Tree$Efficiency)
+#Based on the efficiency score, these are the vegetables I would choose to grow on Mars
+for (row in 1:nrow(Harvest.Tree)) {
+	if (Harvest.Tree$Efficiency[row] == 2) { 
+	print(rownames(Harvest.Tree[row,]))
+	}}
+```
+
+### Weather
+
+Like the weather on Earth, the weather on Mars appears to be seasonal. It is harder to see in the temperature data but it is easy to see in the pressure data which surprised me. The pressure data has a strict pattern. I'm guessing a similar effect happens on Earth but I was unaware of it before looking at this data. You can see the weeks that are not consecutive have very clear separation, where as the weeks starting around index 30, which are consecutive weeks, are decreasing at a constant rate.
+
+```{r,echo=FALSE}
+plot(MarsWeather.df$Pressure.Avg.,main="Daily Pressure Averages",ylab="Pressure (Pa)")
+```
+
+When I tried looking for relationships between pressure, temperature, and wind speed, I found no simple linear relationships. The plot of temperature vs wind below shows the highest R^2 value I found and it is only 0.116. Lack of a clear, simple relationship is the reason I chose to use a neural network as a model. 
+
+```{r,echo=FALSE}
+plot(MarsWeather.df$Wind.Avg.~MarsWeather.df$Temp.Avg...F.,main="Avg. Temperture vs Wind Speed",ylab="Wind Speed (mph)",xlab="Temperature (°F)")
+model=lm(MarsWeather.df$Wind.Avg.~MarsWeather.df$Temp.Avg...F.)
+abline(model)
+```
+
+#### Wind
+
+Out of all the data I looked at for this project, the daily average wind direction was the most interesting to me. I discovered the wind direction in this location is seasonal and in the current season the most common direction is overwhelmingly NWN. Most interestingly, on the sols where the wind blows from the west it is really cold. By observing the boxplots (ignoring SW since it only has three data points), you can see the temperatures for W are below those of other directions. I also looked at the scatter plot below to confirm that the days around the westward wind days were not just as cold. The west wind days show up as blue points. 
+```{r,echo=FALSE}
+summary(MarsWeather.df$Wind.Direction)
+boxplot(MarsWeather.df$Temp.Avg...F.[MarsWeather.df$Wind.Direction=="SSE"],MarsWeather.df$Temp.Avg...F.[MarsWeather.df$Wind.Direction=="W"],MarsWeather.df$Temp.Avg...F.[MarsWeather.df$Wind.Direction=="WNW"],MarsWeather.df$Temp.Avg...F.[MarsWeather.df$Wind.Direction=="SE"],MarsWeather.df$Temp.Avg...F.[MarsWeather.df$Wind.Direction=="SSW"],MarsWeather.df$Temp.Avg...F.[MarsWeather.df$Wind.Direction=="SW"],names=c("SSE","W","WNW","SE","SSW","SW"),ylab="Daily Average Temperature (°F)",main="Temperature Distributions for Average Wind Direction",xlab="Average Wind Direction")
+plot(MarsWeather.df$Temp.Avg...F.,main="Daily Temperature Averages",ylab="Temperature (°F)")
+points(x=c(8,11,12,13,41,56,64,67), y=c(-89.5, -90.0, -90.4, -90.0, -90.9, -88.3, -86.7, -93.1), type="p", pch=1, col="blue", bg=NA, cex=1)
+
+```
+
+#### Neural Network Results
+
+Below, you can see the results of applying the model to the test set. The RMSE is shown below the plot. I would have liked to see the RMSE below one but the best one I received was about 1.7. I think the only way to acheive a RMSE below one would be to collect more data for the training set.
+
+```{r,echo=FALSE,include=FALSE}
+library(neuralnet)
+normalize=function(x){
+  return((x - min(x)) / (max(x) - min(x)))
+}
+MarsWeather.df=na.omit(MarsWeather.df)
+#I am going to train on 75% of the data
+n=nrow(MarsWeather.df)
+test=sample(1:n,floor(n/4))
+train=setdiff(1:n,test)
+training=MarsWeather.df[train,]
+#I used the model.matrix function to convert the Wind.Direction variable into a numeric form that can be used in a neural network.
+weather.matrixTR=model.matrix(data=training,~Wind.Avg.+Temp.Max.+Temp.Avg...F.+Temp.Min.+Pressure.Avg.+Wind.Direction)
+#Converted the matrix back into a data frame
+weather.dfTR=as.data.frame(weather.matrixTR)
+#Normalized all the data in the training set that was not already between 0 and 1. 
+weather.dfTR$Wind.Avg.N=normalize(weather.dfTR$Wind.Avg.)
+weather.dfTR$Pressure.Avg.N=normalize(weather.dfTR$Pressure.Avg.)
+weather.dfTR$Temp.Avg.N=normalize(weather.dfTR$Temp.Avg...F.)
+weather.dfTR$Temp.Min.N=normalize(weather.dfTR$Temp.Min.)
+weather.dfTR$Temp.Max.N=normalize(weather.dfTR$Temp.Max.)
+#Performed the same step as above on the testing set. 
+testing=MarsWeather.df[test,]
+weather.matrixT=model.matrix(data=testing,~Wind.Avg.+Temp.Max.+Temp.Avg...F.+Temp.Min.+Pressure.Avg.+Wind.Direction)
+weather.dfT=as.data.frame(weather.matrixT)
+weather.dfT$Wind.Avg.N=normalize(weather.dfT$Wind.Avg.)
+weather.dfT$Pressure.Avg.N=normalize(weather.dfT$Pressure.Avg.)
+weather.dfT$Temp.Avg.N=normalize(weather.dfT$Temp.Avg...F.)
+weather.dfT$Temp.Min.N=normalize(weather.dfT$Temp.Min.)
+weather.dfT$Temp.Max.N=normalize(weather.dfT$Temp.Max.)
+#This function undoes the normalize function.
+denormalize=function(x){
+  return(with(MarsWeather.df,{return(x*(max(Wind.Avg.)-min(Wind.Avg.))+min(Wind.Avg.))}))
+}
+```
+
+```{r,echo=FALSE}
+library(Metrics)
+#Used a neural network to predict the average wind speed for a day on Mars using lowest temperature, highest temperature, average temperature, average pressure, and wind direction as explanatory variables.
+log.model=neuralnet(Wind.Avg.N~Temp.Max.N+Temp.Avg.N+Temp.Min.N+Pressure.Avg.N+Wind.DirectionSE+Wind.DirectionSSE+Wind.DirectionSSW+Wind.DirectionSW+Wind.DirectionW,data=weather.dfTR,hidden=c(5,5,5,5,5,5),act.fct = "logistic",rep=20)
+#plot(log.model)
+#These are the actual values that were observed.
+observed=weather.dfT$Wind.Avg.
+#These are the values that were predicted by the neural network model. They are denormalized.
+predicted=denormalize(predict(log.model,weather.dfT))
+plot(predicted,observed,main="Comparison of predicted and observed wind speeds")
+#Used RMSE as my measure of error for the neural network.
+rmse(observed,predicted)
+```
+
+### Greenhouses
+
+After seeing the results of the two functions below, I determined that tse_maxs is probably the more realistic function. To grow the five vegetables I plug into the function in the shortest amount of time, it would take 80 greenhouses which is probably not realistic materials wise. The 14 greenhouses the other function came up with is more doable. Either way, it is going to take a lot of energy and materials to produce food on Mars. 
+
+In the table below, each row corresponds to a vegetable inputted into the function.
+
+```{r}
+#returns number of days to grow, number of greenhouses needed, and kilowatts of energy needed in that order
+tse_maxt(c("Beets","Bok Choy","Broccoli","Corn","Potatoes"),10,10,"21-25",-80,10)
+#returns number of greenhouses needed and kilowatts of energy needed
+tse_maxs(c("Beets","Bok Choy","Broccoli","Corn","Potatoes"),10,10,"21-25",-80,10)
+```
+
+## Appendices {.tabset}
+
+### Appendix I {.tabset}
+
+#### Calories
+
+```{r}
+library(rvest)
+library(xml2)
+library(stringr)
+url="https://www.calories.info/food/vegetables"
+Calories=url %>% xml2::read_html()%>%html_nodes(xpath='//*[@id="calories-table"]')%>%html_table(fill=TRUE) #Was able to get this in R using XPath
+Calories=Calories[[1]] #Changed it into a data frame
+Calories=Calories[-1,] #Got rid of the first row since it was headers
+#Removed the columns I was not interested in
+Calories=Calories[,-6]
+Calories=Calories[,-4]
+colnames(Calories)=c("Food","100 g", "Grams per Unit (g)","Calories") #Named the columns
+rownames(Calories)=Calories[,1] #Used the first column to name the rows
+Calories=Calories[,-1] #Got rid of the first column
+Calories[,"100 g"]=as.numeric(str_extract(Calories$`100 g`,"[0-9]*")) #Took off the units
+Calories[,"Calories"]=as.numeric(str_extract(Calories$Calories,"[0-9]*"))
+Calories[8,] #Many of the rows in this variable looked similar to this so in the following two lines I extracted just the number
+Calories[,2]=(str_extract(Calories[,2],"[[:punct:]]+[0-9]+[[:punct:]]?[0-9]?"))
+Calories[,2]=as.numeric(str_extract(Calories[,2],"[0-9]+[[:punct:]]?[0-9]?"))
+#Everything below this is making sure row names match when data frames are merged
+rownames(Calories)[rownames(Calories) == "Pumpkin"] = "Pumpkins"
+rownames(Calories)[rownames(Calories) == "Beetroot"] = "Beets"
+rownames(Calories)[rownames(Calories) == "Carrot"] = "Carrots"
+rownames(Calories)[rownames(Calories) == "Cherry Tomato"] = "Cherry Tomatoes"
+rownames(Calories)[rownames(Calories) == "Cucumber"] = "Cucumbers"
+rownames(Calories)[rownames(Calories) == "Gourd"] = "Gourds"
+rownames(Calories)[rownames(Calories) == "Onion"] = "Onions"
+rownames(Calories)[rownames(Calories) == "Pepper"] = "Peppers"
+rownames(Calories)[rownames(Calories) == "Potato"] = "Potatoes"
+rownames(Calories)[rownames(Calories) == "Sweet Potato"] = "Sweet Potatoes"
+rownames(Calories)[rownames(Calories) == "Tomato"] = "Tomatoes"
+```
+
+#### pH
+
+```{r}
+pH=read.csv(file="pH.csv")
+rownames(pH)=pH[,1] #First column became row names
+pH=pH[,-1]
+pH[,1]=as.numeric(str_extract(pH$Min.pH,"[0-9]+[[:punct:]]+[0-9]"))
+pH[,2]=as.numeric(str_extract(pH$Max.pH,"[0-9]+[[:punct:]]+[0-9]$"))
+#Data was in the table as a range so when I copied the table to excel, I created a duplicate column and extracted the values I wanted using strings.
+```
+
+#### Harvests
+
+```{r}
+url="https://morningchores.com/vegetable-garden-size/"
+Harvests=url %>% xml2::read_html()%>%html_nodes(xpath='//*[@id="garden-size-table"]')%>%html_table(fill=TRUE) #Used XPath to get this in R as well
+Harvests=Harvests[[1]] #Converted to a data frame
+rownames(Harvests)=Harvests[,1] #Made the first column the row names
+Harvests=Harvests[,-1] #Got rid of the first column
+Harvests=Harvests[,-1] #This column was repetitive so I got rid of it
+rownames(Harvests)[rownames(Harvests) == "Snap Beans (bush)"] = "Beans, bush"
+rownames(Harvests)[rownames(Harvests) == "Snap Beans (pole)"] = "Beans, pole"
+rownames(Harvests)[rownames(Harvests) == "Brussel Sprouts"] = "Brussels Sprouts"
+rownames(Harvests)[rownames(Harvests) == "Collards"] = "Collard Greens"
+rownames(Harvests)[rownames(Harvests) == "Parsnip"] = "Parsnips"
+rownames(Harvests)[rownames(Harvests) == "Radish"] = "Radishes"
+rownames(Harvests)[rownames(Harvests) == "Summer Squash"] = "Squash"
+rownames(Harvests)[rownames(Harvests) == "Strawberry"] = "Strawberries"
+rownames(Harvests)[rownames(Harvests) == "Beans, pole"] = "Green Beans"
+rownames(Harvests)[rownames(Harvests) == "Swiss Chard"] = "Chard"
+```
+
+#### Grow Times
+
+```{r}
+GrowTimes=read.csv(file="GrowTimes.csv") #Could not get rvest to read this html table so I copied and pasted in excel and removed the columns that were equal to columns already in Harvests. I then uploaded the file as a csv to r
+GrowTimes=GrowTimes[-12,]
+rownames(GrowTimes)=GrowTimes[,1] #First column became row names
+GrowTimes=GrowTimes[,-1]
+colnames(GrowTimes)=c("Min Time Needed to Grow (days)","Max Time Needed to Grow (days)") #Renamed columns
+GrowTimes[,1]=as.numeric(str_extract(GrowTimes[,1],"[0-9]*")) #Took labels off and converted to numeric
+GrowTimes[,2]=as.numeric(GrowTimes[,2]) #Converted to numeric
+rownames(GrowTimes)[rownames(GrowTimes) == "Corn (sweet)"] = "Corn"
+rownames(GrowTimes)[rownames(GrowTimes) == "Beans, pole"] = "Green Beans"
+```
+
+#### Merging
+
+```{r}
+#Merged Harvests, GrowTimes, Calories, and pH dataframes to create Harvest
+#by=0 matches rows based on row names
+Harvest=merge(Harvests,GrowTimes,by=0,all=TRUE)
+#When merge is used, row names become a column so I had to rename the rows and then remove that column each time I merged
+rownames(Harvest)=Harvest[,1]
+Harvest=Harvest[,-1]
+Harvest=merge(Harvest,Calories,by=0,all=TRUE)
+rownames(Harvest)=Harvest[,1]
+Harvest=Harvest[,-1]
+Harvest=merge(Harvest,pH,by=0,all=TRUE)
+rownames(Harvest)=Harvest[,1]
+Harvest=Harvest[,-1]
+#Added this column
+Harvest$`Calories per lb`=(Harvest$Calories/Harvest$`100 g`)*453.59
+```
+
+#### Harvest
+
+```{r}
+Harvest=read.csv(file="Harvest.csv")
+Harvest$Avg..Yield.per.100.feet..lb.=as.numeric(Harvest$Avg..Yield.per.100.feet..lb.)
+Harvest$Min.Time.Needed.to.Grow..days.=as.numeric(Harvest$Min.Time.Needed.to.Grow..days.)
+Harvest$Min.pH=as.numeric(Harvest$Min.pH)
+Harvest$Max.pH=as.numeric(Harvest$Max.pH)
+Harvest$Calories=as.numeric(Harvest$Calories)
+Harvest$X100.g=as.numeric(Harvest$X100.g)
+Harvest$`Calories per lb.New`=(Harvest$Calories/Harvest$X100.g)*453.59
+rownames(Harvest)=Harvest[,1]
+```
+
+### Appendix II
+
+```{r}
+mCal=read.csv(file="mCal.csv")
+fCal=read.csv(file="fCal.csv")
+#Took out all the commas
+mCal[,2]=as.numeric(gsub(",","",mCal[,2]))
+mCal[,3]=as.numeric(gsub(",","",mCal[,3]))
+mCal[,4]=as.numeric(gsub(",","",mCal[,4]))
+fCal[,2]=as.numeric(gsub(",","",fCal[,2]))
+fCal[,3]=as.numeric(gsub(",","",fCal[,3]))
+fCal[,4]=as.numeric(gsub(",","",fCal[,4]))
+#Named the rows
+rownames(mCal)=mCal[,1]
+rownames(fCal)=fCal[,1]
+```
+
+### Appendix III
+
+```{r,eval=FALSE}
+library(tidyr)
+library(dplyr)
+MarsWeather.df=read.csv(file="MarsWeather030920.csv")
+#For some wacky reason the data had to converted to a character before it was converted to numeric
+MarsWeather.df[,3]=as.numeric(as.character(str_extract(MarsWeather.df[,3],"[[:punct:]]?[0-9]*+[[:punct:]]?[0-9]*")))
+MarsWeather.df[,4]=as.numeric(as.character(str_extract(MarsWeather.df[,4],"[[:punct:]]?[0-9]*+[[:punct:]]?[0-9]*")))
+MarsWeather.df[,5]=as.numeric(as.character(str_extract(MarsWeather.df[,5],"[[:punct:]]?[0-9]*+[[:punct:]]?[0-9]*")))
+MarsWeather.df[,6]=as.numeric(as.character(MarsWeather.df$Wind.Max.))
+MarsWeather.df[,7]=as.numeric(as.character(MarsWeather.df$Wind.Avg.))
+MarsWeather.df[,8]=as.numeric(as.character(MarsWeather.df$Wind.Min.))
+MarsWeather.df[,11]=as.numeric(as.character(MarsWeather.df$Pressure.Avg.))
+MarsWeather.df=MarsWeather.df %>% arrange(MarsWeather.df$Sol)
+rownames(MarsWeather.df)=MarsWeather.df[,2] #Mars sols became row names
+MarsWeather.df=MarsWeather.df[,-2]
+RegolithpH=8.3
+```
+
+### Appendix IV
+
+```{r}
+efficiency=function(n){
+  eff=c(isTRUE(Harvest.Tree[n,2]<59),
+  isTRUE(Harvest.Tree[n,1]>50),
+  isTRUE(Harvest.Tree[n,7]>289),
+  isTRUE(Harvest.Tree[n,5]==8))
+  sum(eff, na.rm = TRUE)
+}
+#This function counts the number of the inequalities above that are true for each plant in Harvest.Tree and then a for loop adds the number to a column named Efficiency. Inequalities were determined based on quartile value in the summary of Harvest.Tree. Since the pH of Martian soil is about 8.3, ideally we want plants that can handle a pH of 8. 
+for (row in 1:nrow(Harvest.Tree)){
+  Harvest.Tree$Efficiency[row]=efficiency(row)
+}
+```
+
+### Appendix V
+
+```{r}
+#This function converts wind speed in mph to windspeed in kph.
+km.per.hr.from.mile.per.hr=function(wind){
+  wind/0.62137119
+}
+#This function takes 4 arguments in order to give an estimate for the amount of energy a half cylinder shaped greenhouse will need in a day. The wind speed has to be in miles per hour, the temperature must be in fahrenheit, and the length and width must be in feet. The returned result is in kilowatts. This way of calculating energy needed came from https://www.dpi.nsw.gov.au/agriculture/horticulture/greenhouse/structures-and-technology/heating#:~:text=Wind%20increases%20the%20removal%20of%20heat%20from%20the,it%20is%20a%20good%20idea%20to%20include%20it.
+GHenergy=function(length,width,aveTemp,wind){
+       vol=(0.5*3.14159*(0.5*width)^2)*length
+       #calculating surface area and volume of the greenhouse
+       SA=(0.5*width*3.14159*length)+(3.14159*(0.5*width)^2)
+       #converting to mph to kph
+       windy=km.per.hr.from.mile.per.hr(wind)
+       #taking into account the wind shear
+       if(windy<=25){
+         wind.shear=1.0
+       }
+       if(windy>25){
+         wind.shear=1.025
+       }
+       if(windy>30){
+         wind.shear=1.050
+       }
+       if(windy>35){
+         wind.shear=1.075
+       }
+       #calculating the temperature difference between inside and outside of the greenhouse
+       temp=abs(aveTemp-65)
+       #These two constants are the smallest constants possible for materials we currently use to build greenhouse. I am assuming here that air leakage         and thermal properties for the materials used to build greenhouses on Mars will the same or better than the best materials currently used on            Earth. 
+       c1=0.5
+       c2=0.7
+       #calculating heat loss by conduction
+       Qc=(SA*temp*c1*wind.shear)/1000
+       #calculating heat loss by air leakage
+       Ql= 0.373*temp *vol*c2*wind.shear
+       #used for converting to kilowatts
+       conversion.factor=0.293
+       #total heat loss
+       BTU=Qc+Ql
+       #converting to kilowatts
+       kWatts=(BTU*conversion.factor)/1000
+       return(as.numeric(kWatts))
+}
+#gives the time, number of green houses, and energy needed to produce enough food to feed a certain number and age group of people for one year growing chosen plants
+#the arguments are: plants=a vector containing the plants you want to grow, nmale and nfemale=the number of male and female Martians you are feeding, ave_age= the average age of the Marians (After 17 years old, the ages become a range. These ranges can be seen in the row names of mCal or fCal),temp=average minimum temperature in fahrenheit, and wind=average wind speed in mph
+#this function minimizes time
+tse_maxt=function(plants,nmale,nfemale,ave_age,temp,wind){
+  #determines how many calories will be needed for the people on Mars
+  CalNeeded=(mCal[ave_age,3]*nmale)+(fCal[ave_age,3]*nfemale)
+  #Calories needed from plants for one year assuming half of calories consumed are going to come from plants 
+  CalYear=CalNeeded*365*.5
+  #split the calories needed by number of plants being grown to determine the number of calories that need to be produced by each plant
+  CalperPlant=CalYear/length(plants)
+  #this for loop estimates the time needed to grow, the number of greenhouses needed, and the amount of energy needed if you wanted to produce all of     the needed calories in one harvest
+  y=data.frame()
+  for(value in plants){
+    lbs=CalperPlant/Harvest.Tree[value,7]
+    days=Harvest.Tree[value,2]
+    space=(lbs/Harvest.Tree[value,1])*100
+    lengthT=100
+  #100ft will be the max row length before a new row is started and the max diameter of each green house is 10 ft
+    widthT=(space/100)/(Harvest[value,4]/12)
+    width=10
+    numOfGreenH=widthT/10
+    energy=(numOfGreenH*GHenergy(lengthT,width,temp,wind)*days)
+    tmp <-round(c(days,numOfGreenH,energy),digits=2)
+    y <- rbind.data.frame(y, tmp)
+  }
+  kable(y,col.names = c("# of Days Needed to Grow","# of Greenhouses Needed","Kilowatts of Energy Needed"))
+}
+#this function minimizes space
+List=list()
+tse_maxs=function(plants,nmale,nfemale,ave_age,temp,wind){
+  CalNeeded=(mCal[ave_age,3]*nmale)+(fCal[ave_age,3]*nfemale)
+  CalYear=CalNeeded*365*.5
+  #Assuming half of calories consumed are going to come from plants
+  CalperPlant=CalYear/length(plants)
+  #this for loop estimates the number of greenhouses needed and the amount of energy needed if you wanted to produce the calories needed in a year's       time
+  y=data.frame()
+  for(value in plants){
+    harvest=floor(365/Harvest.Tree[value,2])
+    lbs=(CalperPlant/Harvest.Tree[value,7])
+    space=((lbs/Harvest.Tree[value,1])*100)/harvest
+    lengthT=100
+  #100ft will be the max row length before a new row is started and the max diameter of each green house is 10 ft
+    widthT=(space/100)/(Harvest[value,4]/12)
+    width=10
+    numOfGreenH=widthT/10
+    energy=(numOfGreenH*GHenergy(lengthT,width,temp,wind)*365)
+    tmp <- ceiling(c(numOfGreenH,energy))
+    y <- rbind.data.frame(y, tmp)
+  }
+  kable(y,col.names = c("# of Greenhouses Needed","Kilowatts of Energy Needed"))
+}
+```
+
+### Appendix VI {.tabest}
+
+#### Sets
+
+```{r}
+library(neuralnet)
+normalize=function(x){
+  return((x - min(x)) / (max(x) - min(x)))
+}
+MarsWeather.df=na.omit(MarsWeather.df)
+#I am going to train on 75% of the data
+n=nrow(MarsWeather.df)
+test=sample(1:n,floor(n/4))
+train=setdiff(1:n,test)
+training=MarsWeather.df[train,]
+#I used the model.matrix function to convert the Wind.Direction variable into a numeric form that can be used in a neural network.
+weather.matrixTR=model.matrix(data=training,~Wind.Avg.+Temp.Max.+Temp.Avg...F.+Temp.Min.+Pressure.Avg.+Wind.Direction)
+#Converted the matrix back into a data frame
+weather.dfTR=as.data.frame(weather.matrixTR)
+#Normalized all the data in the training set that was not already between 0 and 1. 
+weather.dfTR$Wind.Avg.N=normalize(weather.dfTR$Wind.Avg.)
+weather.dfTR$Pressure.Avg.N=normalize(weather.dfTR$Pressure.Avg.)
+weather.dfTR$Temp.Avg.N=normalize(weather.dfTR$Temp.Avg...F.)
+weather.dfTR$Temp.Min.N=normalize(weather.dfTR$Temp.Min.)
+weather.dfTR$Temp.Max.N=normalize(weather.dfTR$Temp.Max.)
+#Performed the same step as above on the testing set. 
+testing=MarsWeather.df[test,]
+weather.matrixT=model.matrix(data=testing,~Wind.Avg.+Temp.Max.+Temp.Avg...F.+Temp.Min.+Pressure.Avg.+Wind.Direction)
+weather.dfT=as.data.frame(weather.matrixT)
+weather.dfT$Wind.Avg.N=normalize(weather.dfT$Wind.Avg.)
+weather.dfT$Pressure.Avg.N=normalize(weather.dfT$Pressure.Avg.)
+weather.dfT$Temp.Avg.N=normalize(weather.dfT$Temp.Avg...F.)
+weather.dfT$Temp.Min.N=normalize(weather.dfT$Temp.Min.)
+weather.dfT$Temp.Max.N=normalize(weather.dfT$Temp.Max.)
+#This function undoes the normalize function.
+denormalize=function(x){
+  return(with(MarsWeather.df,{return(x*(max(Wind.Avg.)-min(Wind.Avg.))+min(Wind.Avg.))}))
+}
+```
+
+#### Models
+
+```{r,eval=FALSE}
+library(Metrics)
+#Used a neural network to predict the average wind speed for a day on Mars using lowest temperature, highest temperature, average temperature, average pressure, and wind direction as explanatory variables.
+log.model=neuralnet(Wind.Avg.N~Temp.Max.N+Temp.Avg.N+Temp.Min.N+Pressure.Avg.N+Wind.DirectionSE+Wind.DirectionSSE+Wind.DirectionSSW+Wind.DirectionSW+Wind.DirectionW,data=weather.dfTR,hidden=c(5,5,5,5,5,5),act.fct = "logistic",rep=20)
+plot(log.model)
+#These are the actual values that were observed.
+observed=weather.dfT$Wind.Avg.
+#These are the values that were predicted by the neural network model. They are denormalized.
+predicted=denormalize(predict(log.model,weather.dfT))
+plot(predicted,observed,main="Comparison of predicted and observed wind speeds")
+residual=observed-predicted
+plot(predicted,residual,main="Residual Plot of logistic model")
+#Used RMSE as my measure of error for the neural network.
+rmse(observed,predicted)
+#Used the same steps as above but instead I used softplus as the activation function.
+softplus=function(x){log(1+exp(x))}
+soft.model=neuralnet(Wind.Avg.N~Temp.Max.N+Temp.Avg.N+Temp.Min.N+Pressure.Avg.N+Wind.DirectionSE+Wind.DirectionSSE+Wind.DirectionSSW+Wind.DirectionSW+Wind.DirectionW,data=weather.dfTR,hidden=c(5,5,5,5,5),act.fct = softplus,rep=5)
+observed_b=weather.dfT$Wind.Avg.
+predicted_b=denormalize(predict(soft.model,weather.dfT))
+plot(predicted_b,observed_b,main="Comparison of predicted and observed wind speeds")
+residual_b=observed_b-predicted_b
+plot(predicted_b,residual_b,main="Residual Plot of softplus model")
+rmse(observed_b,predicted_b)
+```
+
+### Appendix VII
+
+```{r}
+Harvest.Tree=Harvest[,-8]
+Harvest.Tree=Harvest.Tree[,-9]
+Harvest.Tree=Harvest.Tree[,-4]
+Harvest.Tree=Harvest.Tree[,-4]
+Harvest.Tree=Harvest.Tree[,-4]
+Harvest.Tree=Harvest.Tree[,-2]
+Harvest.Tree=Harvest.Tree[,-1]
+Harvest.Tree=Harvest.Tree[,-8]
+Harvest.Tree=Harvest.Tree[,-4]
+Harvest.TreeF=na.omit(Harvest.Tree)
+harvest.tree=rpart(Vegetable.Category~., data=Harvest.TreeF,method="class")
+prp(harvest.tree)
+```

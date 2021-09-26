@@ -1,0 +1,91 @@
+"",Harvest Needed (lbs),Avg. Yield per 100 feet (lb),Plants Spacing (in),Row Length (ft),Plants Needed,Min Time Needed to Grow (days),Max Time Needed to Grow (days),100 g,Grams per Unit (g),Calories,Min.pH,Max.pH,Vegetable.Category,Calories per lb 
+"Artichoke",3,50,48,6,2,160,180,100,128,47,5.6,6.6,"flower",213.1873
+"Arugula",NA,NA,NA,NA,NA,24,45,100,2,25,6.0,7.0,"leaves",113.3975
+"Asparagus",2,30,18,7,5,1095,1460,100,12,20,6.5,7.5,"stem",90.718
+"Aubergine",NA,NA,NA,NA,NA,NA,NA,100,458,25,NA,NA,NA,113.3975
+"Avocado",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,6,7,"fruit",NA
+"Basil",0.5,45,14,2,2,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Beans, bush",15,120,4,13,39,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Beets",3.5,150,2,3,18,42,56,100,82,43,5.6,6.6,"root",195.0437
+"Bell Pepper",NA,NA,NA,NA,NA,NA,NA,100,73,20,NA,NA,NA,90.718
+"Black Olives",NA,NA,NA,NA,NA,NA,NA,100,2.7,115,NA,NA,NA,521.6285
+"Bok Choy",3,130,8,3,5,40,45,100,NA,16,6.0,7.5,"leaves",NA
+"Broccoli",8,100,18,8,6,55,65,100,608,34,6,7,"flower",154.2206
+"Brussels Sprouts",6,75,18,8,6,80,100,100,19,43,6,7,"leaves",195.0437
+"Cabbage",15,150,18,10,7,80,100,100,908,25,5.6,6.6,"leaves",113.3975
+"Cantaloupe",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,6,7,"fruit",NA
+"Capsicum",NA,NA,NA,NA,NA,NA,NA,100,45,27,NA,NA,NA,122.4693
+"Carrots",10,100,10,10,12,60,70,100,61,41,5,6,"root",185.9719
+"Catnip",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,5,6,"leaves",NA
+"Cauliflower",9,100,18,9,6,123,154,100,13,25,6,7,"flower",113.3975
+"Celery",4,60,8,7,11,105,130,100,40,16,6,7,"stem",72.5744
+"Chard",3,85,10,4,5,60,NA,100,48,19,6,7,"stem",86.1821
+"Cherry Tomatoes",17,150,16,12,9,60,80,100,20,100,5.5,7.0,"fruit",453.59
+"Chicory",NA,NA,NA,NA,NA,NA,NA,100,53,72,NA,NA,NA,326.5848
+"Chili pepper",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,5,6,"fruit",NA
+"Chinese Cabbage",NA,NA,NA,NA,NA,NA,NA,100,840,16,NA,NA,NA,72.5744
+"Chives",NA,NA,NA,NA,NA,NA,NA,100,3,30,5,6,"stem",136.077
+"Cilantro",0.25,50,8,1,2,58,64,100,NA,23,6.5,7.5,"leaves",NA
+"Collard Greens",2,100,12,2,2,60,85,100,36,32,6.5,6.8,"leaves",145.1488
+"Corn",25,80,16,32,24,62,93,100,154,365,6,7,"seed",1655.6035
+"Courgette",NA,NA,NA,NA,NA,NA,NA,100,196,17,NA,NA,NA,77.1103
+"Creamed Spinach",NA,NA,NA,NA,NA,NA,NA,100,200,74,NA,NA,NA,335.6566
+"Cucumbers",8,120,24,7,4,62,93,100,410,16,5,6,"fruit",72.5744
+"Dill",0.25,60,14,1,1,67,81,100,NA,305,5,6,"seed",NA
+"Eggplant",4,100,20,4,3,100,120,100,458,25,5,6,"fruit",113.3975
+"Endive",NA,NA,NA,NA,NA,NA,NA,100,513,17,NA,NA,NA,77.1103
+"Fennel",1,90,12,2,2,87,104,100,234,31,7.0,8.0,"bulb",140.6129
+"Garlic",1,25,6,4,8,276,NA,100,3,149,5,6,"bulb",675.8491
+"Gherkin",NA,NA,NA,NA,NA,NA,NA,100,65,14,NA,NA,NA,63.5026
+"Gourds",NA,NA,NA,NA,NA,NA,NA,100,771,14,5,6,"fruit",63.5026
+"Green Beans",15,150,6,10,20,60,75,100,110,31,6,7,"seed",140.6129
+"Green Olives",NA,NA,NA,NA,NA,NA,NA,100,2.7,115,NA,NA,NA,521.6285
+"Green Onion",NA,NA,NA,NA,NA,NA,NA,100,15,32,NA,NA,NA,145.1488
+"Horseradish",NA,NA,NA,NA,NA,NA,NA,100,15,48,5.5,6.8,"root",217.7232
+"Jerusalem Artichoke",1.5,150,16,1,1,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Kale",1,100,12,1,1,55,75,100,67,49,5.5,6.5,"leaves",222.2591
+"Kiwi",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,5,7,"fruit",NA
+"Kohlrabi",1.5,75,6,2,4,50,70,100,400,27,5.5,6.8,"leaves",122.4693
+"Kumara",NA,NA,NA,NA,NA,NA,NA,100,130,86,NA,NA,NA,390.0874
+"Leek",1,45,4,3,9,120,150,100,89,61,5,6,"bulb",276.6899
+"Lettuce",6,50,14,12,11,52,62,100,600,15,6.5,7,"leaves",68.0385
+"Lima Beans (bush)",3,25,4,12,36,60,90,100,NA,338,6.0,6.8,"seed",NA
+"Lima Beans (pole)",3,50,16,6,5,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Melons",6,110,42,6,2,85,90,100,NA,34,6.0,6.5,"fruit",NA
+"Mint",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,6,7,"leaves",NA
+"Mushrooms",NA,2500,NA,NA,NA,365,NA,100,5.4,22,7,8,"other",99.7898
+"Muskmelon",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,6.8,"fruit",NA
+"Mustard",1,50,6,2,4,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Mustard Greens",NA,NA,NA,NA,NA,NA,NA,100,56,27,NA,NA,NA,122.4693
+"Nori",NA,NA,NA,NA,NA,NA,NA,100,2.6,35,NA,NA,NA,158.7565
+"Okra",1,100,16,1,1,60,70,100,12,33,6,8,"fruit",149.6847
+"Olives",NA,NA,NA,NA,NA,NA,NA,100,2.7,115,NA,NA,NA,521.6285
+"Onions",8,100,4,8,24,110,125,100,85,40,6.2,6.8,"bulb",181.436
+"Parsley",0.25,30,8,1,2,NA,NA,NA,NA,NA,6,8,"leaves",NA
+"Parsnips",3,100,4,3,9,120,180,100,170,75,5,7,"root",340.1925
+"Peanuts",NA,NA,NA,NA,NA,154,215,100,NA,587,5,6,"other",NA
+"Peas",3,40,4,8,24,60,70,100,98,81,5.6,6.6,"seed",367.4079
+"Peppers",3,60,16,5,4,123,150,100,75,27,6,8,"fruit",122.4693
+"Potatoes",25,100,12,25,25,90,150,100,213,77,5.8,6.5,"root",349.2643
+"Pumpkins",10,100,42,10,3,85,130,100,196,26,5,7,"fruit",117.9334
+"Radishes",2,40,4,5,15,21,70,100,4.5,16,6,7,"root",72.5744
+"Raspberry",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,6,6.5,"fruit",NA
+"Red Cabbage",NA,NA,NA,NA,NA,NA,NA,100,22,31,NA,NA,NA,140.6129
+"Rhubarb",4,100,4,4,12,730,NA,100,NA,21,5,7,"stem",NA
+"Rutabaga",1.5,120,6,2,4,NA,NA,100,386,38,5,7,"root",172.3642
+"Shallots",NA,NA,NA,NA,NA,NA,NA,100,25,72,5,7,"bulb",326.5848
+"Soy Beans",15,50,10,30,36,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Spinach",3,40,12,8,8,90,NA,100,340,23,5,7,"leaves",104.3257
+"Squash",10,150,24,7,4,40,100,100,196,45,6,7,"fruit",204.1155
+"Strawberries",13,140,20,10,6,365,NA,100,144,32,6,7,"fruit",NA
+"Sunflowers",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,6,7,"seed",NA
+"Sweet Potatoes",3,100,14,3,3,90,170,100,130,86,5,7,"root",390.0874
+"Swiss Chard",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,6,7,"stem",NA
+"Tomatoes",24,100,30,24,10,123,154,100,111,18,5.5,7,"fruit",81.6462
+"Turnip Greens",NA,NA,NA,NA,NA,NA,NA,100,170,20,NA,NA,NA,90.718
+"Turnips",5,75,6,7,14,35,70,100,122,28,5,7,"root",127.0052
+"Wasabi",NA,NA,NA,NA,NA,NA,NA,100,169,109,NA,NA,NA,494.4131
+"Watermelons",12,200,60,6,2,70,90,100,NA,30,NA,6.8,"fruit",NA
+"Winter Squash",6,100,32,6,3,NA,NA,100,431,34,NA,NA,NA,154.2206
+"Yam",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,6,8,"tuber",NA
+"Zucchini",NA,300,48,NA,NA,50,58,100,196,17,6,7,"fruit",77.1103

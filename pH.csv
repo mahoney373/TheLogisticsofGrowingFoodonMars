@@ -1,0 +1,58 @@
+Vegetable,Min pH,Max pH,Vegetable Category
+Artichoke,5.6-6.6,5.6-6.6,flower
+Asparagus,6.5-7.5,6.5-7.5,stem
+Avocado,6.0-7.0,6.0-7.0,fruit
+Green Beans,6.0-7.0,6.0-7.0,seed
+Beets,5.6-6.6,5.6-6.6,root
+Broccoli,6.0-7.0,6.0-7.0,flower
+Brussels Sprouts,6.0-7.0,6.0-7.0,leaves
+Cabbage,5.6-6.6,5.6-6.6,leaves
+Cantaloupe,6.0-7.0,6.0-7.0,fruit
+Carrots,5.0-6.0,5.0-6.0,root
+Catnip,5.0-6.0,5.0-6.0,leaves
+Cauliflower,6.0-7.0,6.0-7.0,flower
+Celery,6.0-7.0,6.0-7.0,stem
+Chard,6.0-7.0,6.0-7.0,stem
+Chili pepper,5.0-6.0,5.0-6.0,fruit
+Chives,5.0-6.0,5.0-6.0,stem
+Cucumbers,5.0-6.0,5.0-6.0,fruit
+Dill,5.0-6.0,5.0-6.0,leaves
+Eggplant,5.0-6.0,5.0-6.0,fruit
+Garlic,5.0-6.0,5.0-6.0,bulb
+Gourds,5.0-6.0,5.0-6.0,fruit
+Kiwi,5.0-7.0,5.0-7.0,fruit
+Leek,5.0-6.0,5.0-6.0,bulb
+Lettuce,6.5-7.0,6.5-7.0,leaves
+Mint,6.0-7.0,6.0-7.0,leaves
+Mushrooms,7.0-8.0,7.0-8.0,other
+Okra,6.0-8.0,6.0-8.0,fruit
+Onions,6.2-6.8,6.2-6.8,bulb
+Parsley,6.0-8.0,6.0-8.0,leaves
+Parsnips,5.0-7.0,5.0-7.0,root
+Peas,5.6-6.6,5.6-6.6,seed
+Peanuts,5.0-6.0,5.0-6.0,other
+Peppers,6.0-8.0,6.0-8.0,fruit
+Potatoes,5.8-6.5,5.8-6.5,root
+Pumpkins,5.0-7.0,5.0-7.0,fruit
+Radishes,6.0-7.0,6.0-7.0,root
+Raspberry,6.0-6.5,6.0-6.5,fruit
+Rhubarb,5.0-7.0,5.0-7.0,stem
+Rutabaga,5.0-7.0,5.0-7.0,root
+Shallots,5.0-7.0,5.0-7.0,bulb
+Spinach,5.0-7.0,5.0-7.0,leaves
+Squash,6.0-7.0,6.0-7.0,fruit
+Strawberries,6.0-7.0,6.0-7.0,fruit
+Sunflowers,6.0-7.0,6.0-7.0,seed
+Corn,6.0-7.0,6.0-7.0,seed
+Sweet Potatoes,5.0-7.0,5.0-7.0,root
+Swiss Chard,6.0-7.0,6.0-7.0,stem
+Tomatoes,5.5-7.0,5.5-7.0,fruit
+Turnips,5.0-7.0,5.0-7.0,root
+Yam,6.0-8.0,6.0-8.0,tuber
+Zucchini,6.0-7.0,6.0-7.0,fruit
+Watermelons,6,6.8,fruit
+Muskmelon,6,6.8,fruit
+Cilantro,6.5,7.5,leaves
+Collard Greens,6.5,6.8,leaves
+Horseradish,5.5,6.8,root
+
